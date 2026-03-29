@@ -3,6 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { declarationSchema, type DeclarationData } from '../schemas/ethicsForm';
 import { useFormState, useFormDispatch } from '../context/FormContext';
 import { clearSavedData } from '../hooks/useAutoSave';
+import { submitApplication } from '../api/submitApplication';
+import type { FullFormData } from '../schemas/ethicsForm';
 
 export function StepDeclaration() {
   const { formData } = useFormState();
@@ -21,11 +23,20 @@ export function StepDeclaration() {
     },
   });
 
-  const onSubmit = (data: DeclarationData) => {
-    dispatch({ type: 'NEXT_STEP', payload: data });
+  const onSubmit = async (data: DeclarationData) => {
+  dispatch({ type: 'NEXT_STEP', payload: data });
+
+  const fullData = { ...formData, ...data } as FullFormData;
+
+  try {
+    await submitApplication(fullData);
     dispatch({ type: 'SUBMIT' });
     clearSavedData();
-  };
+  } catch (err) {
+    console.error('Submission error:', err);
+    alert('Failed to submit application. Please try again.');
+  }
+};
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="step-form">
