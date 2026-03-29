@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# Ethics Form Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A multi-step form wizard for submitting research ethics applications. Built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This application guides applicants through a four-step form to submit a research ethics application. Each step is validated independently before proceeding, and progress is auto-saved to `localStorage` so users can resume where they left off.
 
-## React Compiler
+### Form Steps
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Step | Title | Description |
+|------|-------|-------------|
+| 1 | Applicant Info | Name, email, department, and supervisor |
+| 2 | Ethics & Risk | Ethics category (human / animal / environmental), risk level (1–5), and funding details |
+| 3 | Research Details | Project title, description, start/end dates, and participant count |
+| 4 | Declaration | Agreement to terms and data policy, plus digital signature |
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Step-by-step wizard** with a clickable progress bar for non-linear navigation
+- **Per-step validation** using [Zod](https://zod.dev) schemas via `react-hook-form`
+- **Auto-save** — form state is periodically written to `localStorage`; on next visit the user is prompted to restore their progress
+- **Global form state** managed with React Context and `useReducer`
+- **Submission summary** displayed on successful completion
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org)
+- [Vite](https://vite.dev) — dev server and bundler
+- [react-hook-form](https://react-hook-form.com) — form state and submission handling
+- [Zod](https://zod.dev) — schema-based validation
+- [@hookform/resolvers](https://github.com/react-hook-form/resolvers) — Zod adapter for react-hook-form
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── FormWizard.tsx        # Wizard shell, progress bar, auto-save restore
+│   ├── StepApplicant.tsx     # Step 1 — applicant information
+│   ├── StepEthicsCategory.tsx# Step 2 — ethics category & risk
+│   ├── StepResearchDetails.tsx# Step 3 — project details
+│   └── StepDeclaration.tsx   # Step 4 — declaration & signature
+├── context/
+│   └── FormContext.tsx       # Global state (Context + useReducer)
+├── hooks/
+│   └── useAutoSave.ts        # localStorage auto-save logic
+└── schemas/
+    └── ethicsForm.ts         # Zod schemas and TypeScript types
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- [Node.js](https://nodejs.org) 18 or later
+- npm (bundled with Node.js)
+
+### Install dependencies
+
+```bash
+npm install
 ```
+
+### Run the development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Other scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Type-check and compile a production build to `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Run ESLint across the project |
